@@ -2,7 +2,6 @@ import { Router } from 'express';
 let app = Router();
 import { Cloudlink } from '../lib/thirdparty/cloudlink/index.js';
 let client = new Cloudlink('wss://server.meower.org');
-import { readFileSync } from 'fs';
 let tmp = {};
 import { account } from '../lib/firstparty/classes.js';
 import crypto from 'crypto';
@@ -37,13 +36,13 @@ client.on('pvar', (data) => {
 });
 
 app.get('/login', (req, res) => {
-  res.send((readFileSync('./accounts/login.html', 'utf8')).replace('{{account}}', process.env.account));
+  res.redirect('https://openly.meower.org/login');
 });
 
 app.get('/logout', (req, res) => {
   if (req.auth) {
-    res.send(readFileSync('./accounts/logout.html', 'utf8'));
-  } else {res.db.usersres.db.users
+    res.redirect('https://openly.meower.org/logout');
+  } else {
     res.status(401).send('Unauthorized');
   }
 });
@@ -52,7 +51,7 @@ app.post('/logout', async (req, res) => {
   if (req.auth) {
     res.db.tokens.delete(req.cookies.authorization);
     res.setHeader('Set-Cookie', `authorization=; Path=/;`);
-    res.status(200).send('Logged out');
+    res.redirect('https://openly.meower.org/');
   } else {
     res.status(401).send('Unauthorized');
   }
